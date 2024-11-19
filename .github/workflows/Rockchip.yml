@@ -148,7 +148,7 @@ jobs:
       run: |
         echo "![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.tag.outputs.release_tag }}/total?style=flat-square)" >> release.txt
         echo "- 内核版本: ${{ env.KERNEL }}" >> release.txt
-        echo "- 编译完成时间: ${{ env.FILE_DATE }} " >> release.txt
+        echo "- 编译完成时间: ${{ steps.tag.outputs.release_tag }} " >> release.txt
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v2

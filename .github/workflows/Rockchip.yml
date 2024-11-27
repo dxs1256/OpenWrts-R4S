@@ -150,6 +150,29 @@ jobs:
         echo "- 内核版本: ${{ env.KERNEL }}" >> release.txt
         echo "- 编译完成时间: ${{ steps.tag.outputs.release_tag }} " >> release.txt
 
+    - name: Notify via WxPusher
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      run: |
+        # WxPusher token
+        TOKEN="${{ secrets.WXPUSHER_TOKEN }}"
+
+        # 获取内核版本
+        KERNEL_VERSION="${{ env.KERNEL }}"
+
+        # 创建通知消息
+        MESSAGE="OpenWrt 编译完成，内核版本: $KERNEL_VERSION"
+
+        # 发送通知
+        curl -X POST "https://wxpusher.zjiecode.com/api/send/message" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "appToken": "'"$TOKEN"'",
+            "content": "'"$MESSAGE"'",
+            "summary": "OpenWrt 编译通知",
+            "contentType": 1,
+            "uids": ["UID_5dFRd7oWkOgbzbYyX7A69HRJcpYt"]
+          }'
+
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v2
       if: steps.tag.outputs.status == 'success' && !cancelled()
